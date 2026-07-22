@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import re
+import subprocess
 from pathlib import Path
 
 
@@ -62,6 +63,18 @@ META_TEXT = re.compile(r"(?i)\b(?:" + "|".join(re.escape(term) for term in _META
 
 
 def _release_files(root: Path) -> list[Path]:
+    if (root / ".git").exists():
+        completed = subprocess.run(
+            ["git", "-C", str(root), "ls-files", "-z"],
+            check=True,
+            capture_output=True,
+        )
+        relative_paths = [Path(value.decode()) for value in completed.stdout.split(b"\0") if value]
+        return sorted(
+            root / relative
+            for relative in relative_paths
+            if relative.as_posix() != "SHA256SUMS"
+        )
     files: list[Path] = []
     for path in root.rglob("*"):
         relative_parts = path.relative_to(root).parts
@@ -75,22 +88,27 @@ def _release_files(root: Path) -> list[Path]:
 def scan_release(root: str | Path) -> list[str]:
     root = Path(root)
     findings: list[str] = []
-    for path in root.rglob("*"):
+    release_files = _release_files(root)
+    if not (root / ".git").exists():
+        for path in root.rglob("*"):
+            relative = path.relative_to(root)
+            if path.is_dir() and path.name in FORBIDDEN_DIRECTORIES:
+                findings.append(f"forbidden directory: {relative}")
+
+    for path in release_files:
         relative = path.relative_to(root)
-        if ".git" in relative.parts:
-            continue
         if path.is_symlink():
             findings.append(f"symlink: {relative}")
-        if path.is_dir() and path.name in FORBIDDEN_DIRECTORIES:
-            findings.append(f"forbidden directory: {relative}")
-        if path.is_file() and (
+        if FORBIDDEN_DIRECTORIES & set(relative.parts):
+            findings.append(f"forbidden tracked path: {relative}")
+        if (
             path.name in FORBIDDEN_FILENAMES
             or path.suffix in {".bak", ".key", ".pem", ".pyc", ".pyo", ".tmp"}
             or path.name.lower().startswith(("credential", "secret"))
         ):
             findings.append(f"forbidden file: {relative}")
 
-    for path in _release_files(root):
+    for path in release_files:
         relative = path.relative_to(root)
         if path.suffix.lower() not in TEXT_SUFFIXES and path.name not in {".gitignore", "LICENSE"}:
             findings.append(f"unexpected binary or file type: {relative}")

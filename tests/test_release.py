@@ -25,6 +25,18 @@ class ReleaseTests(unittest.TestCase):
             findings = scan_release(root)
             self.assertTrue(any("credential" in finding for finding in findings))
 
+    def test_git_release_scan_ignores_untracked_environment_files(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            (root / "safe.txt").write_text("tracked")
+            (root / ".gitignore").write_text(".venv/\n")
+            environment = root / ".venv"
+            environment.mkdir()
+            (environment / "generated.txt").write_text("api" + "_key = 'not-a-release-secret'")
+            subprocess.run(["git", "-C", str(root), "add", "safe.txt", ".gitignore"], check=True)
+            self.assertEqual(scan_release(root), [])
+
     def test_checksum_verification_detects_drift(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
