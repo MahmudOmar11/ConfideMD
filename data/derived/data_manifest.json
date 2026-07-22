@@ -1,0 +1,16 @@
+{
+  "synthetic_scored_rows": 7270,
+  "patient_authored_derived_scored_rows": 3150,
+  "gate_scored_rows": 10389,
+  "expected_rows": {
+    "synthetic": 7280,
+    "patient_authored": 3150,
+    "gate": 10400
+  },
+  "missing_scored_rows": {
+    "synthetic": 10,
+    "patient_authored": 0,
+    "gate": 11
+  },
+  "privacy_note": "No source text, generated documents, adjudication quotes, source-row identifiers, or clinician workbook responses are included."
+}

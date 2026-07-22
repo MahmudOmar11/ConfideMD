@@ -1,0 +1,10 @@
+expected_stratum,decision,rows,both_physicians_n,individual_ratings_n,individual_ratings_denominator
+flag-and-escalate,include,20,20,40,40
+flag-and-escalate,suppress,20,0,0,40
+flag-and-escalate,flag-and-escalate,20,0,0,40
+include,include,6,6,12,12
+include,suppress,6,0,0,12
+include,flag-and-escalate,6,0,0,12
+suppress,include,10,0,0,20
+suppress,suppress,10,9,19,20
+suppress,flag-and-escalate,10,0,1,20
