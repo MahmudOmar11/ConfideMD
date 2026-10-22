@@ -1,0 +1,49 @@
+run,model,first_lost_stage,description,harmful_omissions,required_referrals
+B,deepseek-deepseek-v4-flash,extraction_no_output,Extraction returned no output,58,58
+B,deepseek-deepseek-v4-flash,extraction_no_fact,Extraction named no sensitive fact,2,2
+B,deepseek-deepseek-v4-flash,recipient_need_no_output,Recipient-need step returned no output,9,9
+B,deepseek-deepseek-v4-flash,not_managing,Specialty judged not to manage the intervention (hard rule),1,1
+B,deepseek-deepseek-v4-flash,recipient_need_suppress,Recipient-need step chose suppress,0,0
+B,deepseek-deepseek-v4-flash,drafting_fallback,Drafting failed twice (generic template),3,3
+B,deepseek-deepseek-v4-flash,passed_to_drafting,Fact passed to drafting step,0,7
+B,deepseek-deepseek-v4-flash,all,All required referrals,73,80
+B,meta-llama-llama-3.3-70b-instruct,extraction_no_output,Extraction returned no output,0,0
+B,meta-llama-llama-3.3-70b-instruct,extraction_no_fact,Extraction named no sensitive fact,2,2
+B,meta-llama-llama-3.3-70b-instruct,recipient_need_no_output,Recipient-need step returned no output,0,0
+B,meta-llama-llama-3.3-70b-instruct,not_managing,Specialty judged not to manage the intervention (hard rule),2,2
+B,meta-llama-llama-3.3-70b-instruct,recipient_need_suppress,Recipient-need step chose suppress,2,2
+B,meta-llama-llama-3.3-70b-instruct,drafting_fallback,Drafting failed twice (generic template),5,5
+B,meta-llama-llama-3.3-70b-instruct,passed_to_drafting,Fact passed to drafting step,1,69
+B,meta-llama-llama-3.3-70b-instruct,all,All required referrals,12,80
+C,openai-gpt-5.4-mini,extraction_no_output,Extraction returned no output,18,18
+C,openai-gpt-5.4-mini,extraction_no_fact,Extraction named no sensitive fact,2,2
+C,openai-gpt-5.4-mini,recipient_need_no_output,Recipient-need step returned no output,6,6
+C,openai-gpt-5.4-mini,not_managing,Specialty judged not to manage the intervention (hard rule),8,8
+C,openai-gpt-5.4-mini,recipient_need_suppress,Recipient-need step chose suppress,4,4
+C,openai-gpt-5.4-mini,drafting_fallback,Drafting failed twice (generic template),0,0
+C,openai-gpt-5.4-mini,passed_to_drafting,Fact passed to drafting step,0,42
+C,openai-gpt-5.4-mini,all,All required referrals,38,80
+D,deepseek-deepseek-v4-flash,extraction_no_output,Extraction returned no output,8,8
+D,deepseek-deepseek-v4-flash,extraction_no_fact,Extraction named no sensitive fact,2,2
+D,deepseek-deepseek-v4-flash,recipient_need_no_output,Recipient-need step returned no output,3,3
+D,deepseek-deepseek-v4-flash,not_managing,Specialty judged not to manage the intervention (hard rule),3,3
+D,deepseek-deepseek-v4-flash,recipient_need_suppress,Recipient-need step chose suppress,2,2
+D,deepseek-deepseek-v4-flash,drafting_fallback,Drafting failed twice (generic template),0,0
+D,deepseek-deepseek-v4-flash,passed_to_drafting,Fact passed to drafting step,0,62
+D,deepseek-deepseek-v4-flash,all,All required referrals,18,80
+main,deepseek-deepseek-v4-flash,extraction_no_output,Extraction returned no output,26,26
+main,deepseek-deepseek-v4-flash,extraction_no_fact,Extraction named no sensitive fact,0,0
+main,deepseek-deepseek-v4-flash,recipient_need_no_output,Recipient-need step returned no output,22,22
+main,deepseek-deepseek-v4-flash,not_managing,Specialty judged not to manage the intervention (hard rule),1,1
+main,deepseek-deepseek-v4-flash,recipient_need_suppress,Recipient-need step chose suppress,4,4
+main,deepseek-deepseek-v4-flash,drafting_fallback,Drafting failed twice (generic template),0,0
+main,deepseek-deepseek-v4-flash,passed_to_drafting,Fact passed to drafting step,0,27
+main,deepseek-deepseek-v4-flash,all,All required referrals,53,80
+main,meta-llama-llama-3.3-70b-instruct,extraction_no_output,Extraction returned no output,2,2
+main,meta-llama-llama-3.3-70b-instruct,extraction_no_fact,Extraction named no sensitive fact,0,0
+main,meta-llama-llama-3.3-70b-instruct,recipient_need_no_output,Recipient-need step returned no output,2,2
+main,meta-llama-llama-3.3-70b-instruct,not_managing,Specialty judged not to manage the intervention (hard rule),2,2
+main,meta-llama-llama-3.3-70b-instruct,recipient_need_suppress,Recipient-need step chose suppress,1,1
+main,meta-llama-llama-3.3-70b-instruct,drafting_fallback,Drafting failed twice (generic template),4,4
+main,meta-llama-llama-3.3-70b-instruct,passed_to_drafting,Fact passed to drafting step,0,69
+main,meta-llama-llama-3.3-70b-instruct,all,All required referrals,11,80

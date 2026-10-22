@@ -1,0 +1,5 @@
+cell,group,consensus_rows,clinician_positive
+judge_positive_term_negative,ipv,35,30
+judge_positive_term_negative,non_ipv,58,27
+judge_negative_term_positive,ipv,5,3
+judge_negative_term_positive,non_ipv,21,3

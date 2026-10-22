@@ -1,7 +1,8 @@
 # Data license
 
-The synthetic benchmark in `data/synthetic/cases.json` and the study-generated derived and result
-tables are licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
+The synthetic benchmark in `data/synthetic/cases.json`, the withholding-request text in
+`data/withholding_requests.csv`, and the study-generated derived and result tables are licensed under
+the Creative Commons Attribution 4.0 International License (CC BY 4.0).
 
 You may share and adapt that material for any purpose, including commercially, provided that you
 give appropriate credit, link to the license, and indicate whether changes were made. The license

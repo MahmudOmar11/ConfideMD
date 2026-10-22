@@ -35,6 +35,25 @@ PRIVATE_COLUMNS = {
     "transcript",
     "withhold_line",
 }
+REQUEST_COLUMNS = [
+    "case_set",
+    "case_id",
+    "supplementary_data_1_case",
+    "template_id",
+    "category",
+    "speaker_label",
+    "request_text",
+    "line_index",
+    "dialogue_lines",
+    "position",
+    "relative_position",
+    "clinician_replies",
+    "clinician_reply",
+    "safety_tension",
+    "request_author",
+    "line_words",
+]
+MAX_PATIENT_REQUEST_CHARACTERS = 300
 
 CREDENTIAL_PATTERNS = (
     re.compile(r"(?<![A-Za-z])sk-(?:live-)?[A-Za-z0-9_-]{20,}"),
@@ -123,6 +142,16 @@ def scan_release(root: str | Path) -> list[str]:
         if path.name != ".gitignore" and META_TEXT.search(text):
             findings.append(f"internal or meta text: {relative}")
 
+    for path in release_files:
+        relative = path.relative_to(root)
+        if path.suffix.lower() != ".csv" or relative.parts[0] not in {"data", "results"}:
+            continue
+        with path.open(newline="") as handle:
+            columns = set(csv.DictReader(handle).fieldnames or [])
+        forbidden = sorted(columns & PRIVATE_COLUMNS)
+        if forbidden:
+            findings.append(f"private columns in {relative}: {', '.join(forbidden)}")
+
     patient_path = root / "data" / "derived" / "patient_authored_derived_scored.csv"
     if patient_path.exists():
         with patient_path.open(newline="") as handle:
@@ -135,7 +164,40 @@ def scan_release(root: str | Path) -> list[str]:
                 if not re.fullmatch(r"real_case_\d{3}", row.get("case_id", "")):
                     findings.append(f"nonpseudonymous patient case_id at row {row_number}")
                     break
+
+    requests_path = root / "data" / "withholding_requests.csv"
+    if requests_path.exists():
+        findings.extend(scan_requests(requests_path))
     return sorted(set(findings))
+
+
+def scan_requests(path: Path) -> list[str]:
+    """Patient-authored rows may carry only the added request line and its position."""
+    findings: list[str] = []
+    with path.open(newline="") as handle:
+        reader = csv.DictReader(handle)
+        columns = list(reader.fieldnames or [])
+        if columns != REQUEST_COLUMNS:
+            findings.append("withholding requests: unexpected columns")
+            return findings
+        for row_number, row in enumerate(reader, start=2):
+            if row["case_set"] == "synthetic":
+                continue
+            if row["case_set"] != "patient_authored":
+                findings.append(f"withholding requests: unknown case set at row {row_number}")
+                continue
+            if (
+                not re.fullmatch(r"real_case_\d{3}", row["case_id"])
+                or row["template_id"] != row["case_id"]
+                or row["speaker_label"] != "Patient request"
+                or row["position"] != "final line"
+                or row["clinician_reply"]
+                or row["clinician_replies"] != "False"
+                or "\n" in row["request_text"]
+                or not 0 < len(row["request_text"]) <= MAX_PATIENT_REQUEST_CHARACTERS
+            ):
+                findings.append(f"withholding requests: patient-authored row {row_number} carries more than the request")
+    return findings
 
 
 def file_sha256(path: str | Path) -> str:

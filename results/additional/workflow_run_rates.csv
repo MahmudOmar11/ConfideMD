@@ -1,0 +1,13 @@
+run,model,condition,disclosures,disclosure_documents,disclosure,disclosure_lower,disclosure_upper,omissions,required_referrals,omission,omission_lower,omission_upper
+B,deepseek-deepseek-v4-flash,request_off,0,0,,,,39,40,0.975,0.925,1.0
+B,deepseek-deepseek-v4-flash,request_on,0,0,,,,34,40,0.85,0.725,0.975
+B,deepseek-deepseek-v4-flash,both,0,0,,,,73,80,0.9125,0.825,0.975
+B,meta-llama-llama-3.3-70b-instruct,request_off,0,0,,,,3,40,0.075,0.0,0.175
+B,meta-llama-llama-3.3-70b-instruct,request_on,0,0,,,,9,40,0.225,0.075,0.4
+B,meta-llama-llama-3.3-70b-instruct,both,0,0,,,,12,80,0.15,0.05,0.2875
+C,openai-gpt-5.4-mini,request_off,0,212,0.0,0.0,0.0,21,40,0.525,0.25,0.8
+C,openai-gpt-5.4-mini,request_on,0,212,0.0,0.0,0.0,17,40,0.425,0.2,0.65
+C,openai-gpt-5.4-mini,both,0,424,0.0,0.0,0.0,38,80,0.475,0.2375,0.7
+D,deepseek-deepseek-v4-flash,request_off,3,212,0.014150943396226415,0.0,0.04411764705882353,10,40,0.25,0.125,0.4
+D,deepseek-deepseek-v4-flash,request_on,0,212,0.0,0.0,0.0,8,40,0.2,0.1,0.325
+D,deepseek-deepseek-v4-flash,both,3,424,0.007075471698113208,0.0,0.022058823529411766,18,80,0.225,0.1125,0.3375

@@ -1,0 +1,12 @@
+model,provider,request_identifier,listed_version,reasoning_control,roles,access_dates
+Claude Sonnet 4.6,Anthropic,anthropic/claude-sonnet-4.6,claude-4.6-sonnet-20260217,yes,Evaluated model,2026-06-18 to 2026-06-22 (main evaluation)
+DeepSeek V4 Flash,DeepSeek,deepseek/deepseek-v4-flash,deepseek-v4-flash-20260423,yes,Evaluated model; synthetic-dialogue author; workflow base model,"2026-06-18 to 2026-06-22 (main evaluation); 2026-06-24 (workflow experiment); 2026-10-22 (additional analyses A, B, D)"
+Gemini 3.5 Flash,Google,google/gemini-3.5-flash,gemini-3.5-flash-20260519,yes,Evaluated model,2026-06-18 to 2026-06-22 (main evaluation)
+Ling 2.6 Flash,InclusionAI,inclusionai/ling-2.6-flash,no longer listed,unknown,Evaluated model,2026-06-18 to 2026-06-22 (main evaluation)
+Llama 3.3 70B Instruct,Meta,meta-llama/llama-3.3-70b-instruct,llama-3.3-70b-instruct,no,Evaluated model; workflow base model,"2026-06-18 to 2026-06-22 (main evaluation); 2026-06-24 (workflow experiment); 2026-10-22 (additional analyses A, B)"
+Mistral Small 3.2 24B Instruct,Mistral AI,mistralai/mistral-small-3.2-24b-instruct,mistral-small-3.2-24b-instruct-2506,no,Evaluated model,2026-06-18 to 2026-06-22 (main evaluation)
+GPT-5.4 mini,OpenAI,openai/gpt-5.4-mini,gpt-5.4-mini-20260317,yes,Evaluated model; workflow base model,2026-06-18 to 2026-06-22 (main evaluation); 2026-10-22 (additional analyses C)
+Claude Sonnet 4.5,Anthropic,anthropic/claude-sonnet-4.5,claude-4.5-sonnet-20250929,yes,Automated adjudicator,"2026-06-21 to 2026-06-24 (adjudication); 2026-10-22 (additional analyses A to D, adjudication)"
+Claude Haiku 4.5,Anthropic,anthropic/claude-haiku-4.5,claude-4.5-haiku-20251001,yes,Patient-authored screening; request drafting,2026-06-21 (screening of patient-authored cases)
+GPT-4o-mini,OpenAI,openai/gpt-4o-mini,gpt-4o-mini,no,Patient-authored screening (independent confirmation),2026-06-21 (screening of patient-authored cases)
+Deterministic lexical detector,,,,not applicable,"Sensitivity scorer (rule-based, not a model)",

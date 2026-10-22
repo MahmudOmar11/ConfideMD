@@ -1,0 +1,24 @@
+quantity,value
+scored_outputs,20809
+workflow_arm_unguarded_rows_scored,2077
+distinct_scored_documents,18732
+unscored_outputs,21
+unscored:gate_scored:adjudicator returned unparseable output 3 times,9
+unscored:gate_scored:no generation,2
+unscored:synthetic_scored:adjudicator returned unparseable output 3 times,10
+rerun_documents,1040
+rerun_textually_identical_documents,2
+rerun_empty_documents_excluded:deepseek-deepseek-v4-flash,13
+rerun_empty_documents_excluded:meta-llama-llama-3.3-70b-instruct,0
+rerun_empty_primary_documents_excluded:deepseek-deepseek-v4-flash,8
+rerun_empty_primary_documents_excluded:meta-llama-llama-3.3-70b-instruct,0
+rerun_all_forbidden_pairs,651
+rerun_all_forbidden_discordant,100
+rerun_required_pairs,80
+rerun_required_omissions_run_1,4
+rerun_required_omissions_run_2,4
+rerun_required_discordant,0
+workflow_omission_agreement_june_vs_october:deepseek-deepseek-v4-flash,50
+workflow_omission_agreement_june_vs_october:meta-llama-llama-3.3-70b-instruct,75
+workflow_omission_pairs_june_vs_october:deepseek-deepseek-v4-flash,80
+workflow_omission_pairs_june_vs_october:meta-llama-llama-3.3-70b-instruct,80

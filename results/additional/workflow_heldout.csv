@@ -1,0 +1,9 @@
+model,cases,method,disclosures,disclosure_documents,omissions,required_referrals
+deepseek-deepseek-v4-flash,piloting,naive,61,140,1,28
+deepseek-deepseek-v4-flash,piloting,gate,3,140,15,28
+deepseek-deepseek-v4-flash,held_out,naive,110,284,4,52
+deepseek-deepseek-v4-flash,held_out,gate,4,284,38,52
+meta-llama-llama-3.3-70b-instruct,piloting,naive,35,140,1,27
+meta-llama-llama-3.3-70b-instruct,piloting,gate,1,140,3,28
+meta-llama-llama-3.3-70b-instruct,held_out,naive,57,284,10,52
+meta-llama-llama-3.3-70b-instruct,held_out,gate,4,284,8,52

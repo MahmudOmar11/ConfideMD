@@ -37,6 +37,31 @@ class ReleaseTests(unittest.TestCase):
             subprocess.run(["git", "-C", str(root), "add", "safe.txt", ".gitignore"], check=True)
             self.assertEqual(scan_release(root), [])
 
+    def test_release_scan_rejects_private_columns_in_any_data_table(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "data" / "derived").mkdir(parents=True)
+            (root / "data" / "derived" / "extra.csv").write_text("case_id,quote\ncase-001,text\n")
+            findings = scan_release(root)
+            self.assertTrue(any("private columns in data/derived/extra.csv" in finding for finding in findings))
+
+    def test_release_scan_rejects_patient_requests_with_more_than_the_request(self) -> None:
+        source = (ROOT / "data" / "withholding_requests.csv").read_text().splitlines()
+        header, rows = source[0], source[1:]
+        patient = next(row for row in rows if row.startswith("patient_authored,"))
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "data").mkdir()
+            requests = root / "data" / "withholding_requests.csv"
+            requests.write_text("\n".join([header, patient]) + "\n")
+            self.assertEqual(scan_release(root), [])
+            leaked = patient.replace(",final line,", ",line 2 of 3,")
+            requests.write_text("\n".join([header, leaked]) + "\n")
+            self.assertTrue(any("carries more than the request" in finding for finding in scan_release(root)))
+            renamed = patient.replace("real_case_", "real-case-", 1)
+            requests.write_text("\n".join([header, renamed]) + "\n")
+            self.assertTrue(any("carries more than the request" in finding for finding in scan_release(root)))
+
     def test_checksum_verification_detects_drift(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

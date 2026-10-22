@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-22",
+  "adjudication_model": "anthropic/claude-sonnet-4.5",
+  "note": "Additional analyses (October 2026). Same code, prompts, and adjudicator as the June 2026 runs; the runs only restricted conditions and documents, stored every workflow stage, and, for run D, raised every workflow output limit. Document labels are type:disposition.",
+  "runs": [
+    {
+      "run": "A",
+      "description": "Repeat of the unguarded request-absent synthetic condition with identical prompts and settings",
+      "method": "naive",
+      "models": ["deepseek/deepseek-v4-flash", "meta-llama/llama-3.3-70b-instruct"],
+      "conditions": ["request_off"],
+      "document_labels": null,
+      "trace": false,
+      "output_floor": 0,
+      "documents": 1040
+    },
+    {
+      "run": "B",
+      "description": "Routing workflow rerun as specified on every required referral, with every stage stored",
+      "method": "gate",
+      "models": ["deepseek/deepseek-v4-flash", "meta-llama/llama-3.3-70b-instruct"],
+      "conditions": ["request_off", "request_on"],
+      "document_labels": ["referral:required"],
+      "trace": true,
+      "output_floor": 0,
+      "documents": 160
+    },
+    {
+      "run": "C",
+      "description": "GPT-5.4 mini as a third workflow base model, workflow as specified, every stage stored",
+      "method": "gate",
+      "models": ["openai/gpt-5.4-mini"],
+      "conditions": ["request_off", "request_on"],
+      "document_labels": ["employer_letter:forbidden", "referral:forbidden", "referral:required"],
+      "trace": true,
+      "output_floor": 0,
+      "documents": 504
+    },
+    {
+      "run": "D",
+      "description": "DeepSeek workflow with every output limit raised to at least 4,000 tokens (sensitivity analysis)",
+      "method": "gate",
+      "models": ["deepseek/deepseek-v4-flash"],
+      "conditions": ["request_off", "request_on"],
+      "document_labels": ["employer_letter:forbidden", "referral:forbidden", "referral:required"],
+      "trace": true,
+      "output_floor": 4000,
+      "documents": 504
+    }
+  ]
+}
