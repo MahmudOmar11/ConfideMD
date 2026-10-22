@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import unittest
 
-from confidemd.gate import gate_bundle, per_document_constraints, route_document, safety_judgment
+from confidemd.gate import OutputLimitFloor, gate_bundle, per_document_constraints, route_document, safety_judgment
+from confidemd.refusal import fallback_template
+from confidemd.stages import first_lost_stage_logged, first_lost_stage_saved
 
 
 class RecordingClient:
@@ -120,6 +122,94 @@ class GateTests(unittest.TestCase):
         gate_bundle(case_view, "request_on", "Synthetic transcript", client)
         judgments = [call for call in client.calls if "clinical-privacy gatekeeper" in call[1]]
         self.assertEqual(len(judgments), 1)
+
+    def test_empty_replies_fall_back_to_suppression_without_raising(self) -> None:
+        class EmptyClient(RecordingClient):
+            def json(self, system: str, user: str, *, reasoning: str, max_tokens: int) -> str:
+                self.calls.append(("json", system, user))
+                return ""
+
+        case_view = {
+            "id": "case-001",
+            "documents": [
+                {"key": "referral-anesthesiology", "type": "referral", "specialty": "Anesthesiology"},
+                {"key": "employer-letter", "type": "employer_letter"},
+            ],
+        }
+        result = gate_bundle(case_view, "request_on", "Synthetic transcript", EmptyClient(), trace=True)
+        text, record = result["referral-anesthesiology"]
+        self.assertEqual(record["mode"], "SUPPRESS")
+        self.assertEqual((record["judgment"]["diagnosis"], record["judgment"]["drug"]), ("SUPPRESS", "SUPPRESS"))
+        self.assertEqual(record["trace"]["judgment_raw"], {})
+        self.assertEqual(first_lost_stage_logged(record), "extraction_no_output")
+        self.assertEqual(first_lost_stage_saved(record, result["employer-letter"][1]), "extraction_no_output")
+
+    def test_refused_draft_is_retried_once_then_replaced(self) -> None:
+        class RefusingClient(RecordingClient):
+            def text(self, system: str, user: str, *, reasoning: str, max_tokens: int) -> str:
+                self.calls.append(("text", system, user))
+                return "I can't help with that."
+
+        client = RefusingClient()
+        document = {"key": "employer-letter", "type": "employer_letter"}
+        result = gate_bundle({"id": "case-001", "documents": [document]}, "request_off", "Synthetic transcript", client)
+        text, record = result["employer-letter"]
+        self.assertEqual(text, fallback_template(document))
+        self.assertTrue(record["refused"] and record["fallback"])
+        self.assertEqual(sum(1 for call in client.calls if call[0] == "text"), 2)
+        self.assertFalse(any("clinical-privacy auditor" in call[1] for call in client.calls))
+
+    def test_trace_stores_every_stage_and_records_the_kept_fact(self) -> None:
+        case_view = {"id": "case-001", "documents": [
+            {"key": "referral-anesthesiology", "type": "referral", "specialty": "Anesthesiology"}
+        ]}
+        untraced = gate_bundle(case_view, "request_on", "Synthetic transcript", RecordingClient())
+        self.assertNotIn("trace", untraced["referral-anesthesiology"][1])
+        record = gate_bundle(case_view, "request_on", "Synthetic transcript", RecordingClient(), trace=True)[
+            "referral-anesthesiology"
+        ][1]
+        self.assertEqual(set(record["trace"]), {"ledger", "judgment_raw", "keep_facts", "draft", "verify", "repaired"})
+        self.assertEqual(record["trace"]["verify"], {"kind": "keep", "missing": []})
+        self.assertNotIn("_raw", record["judgment"])
+        self.assertEqual(first_lost_stage_logged(record), "passed_to_drafting")
+
+    def test_output_limit_floor_raises_every_stage_limit(self) -> None:
+        class LimitClient(RecordingClient):
+            def __init__(self) -> None:
+                super().__init__()
+                self.limits: list[int] = []
+
+            def json(self, system: str, user: str, *, reasoning: str, max_tokens: int) -> dict:
+                self.limits.append(max_tokens)
+                return super().json(system, user, reasoning=reasoning, max_tokens=max_tokens)
+
+            def text(self, system: str, user: str, *, reasoning: str, max_tokens: int) -> str:
+                self.limits.append(max_tokens)
+                return super().text(system, user, reasoning=reasoning, max_tokens=max_tokens)
+
+        case_view = {"id": "case-001", "documents": [
+            {"key": "referral-anesthesiology", "type": "referral", "specialty": "Anesthesiology"},
+            {"key": "employer-letter", "type": "employer_letter"},
+        ]}
+        specified = LimitClient()
+        gate_bundle(case_view, "request_on", "Synthetic transcript", specified)
+        self.assertEqual(sorted(set(specified.limits)), [250, 300, 700, 800])
+        raised = LimitClient()
+        gate_bundle(case_view, "request_on", "Synthetic transcript", OutputLimitFloor(raised, 4000))
+        self.assertEqual(set(raised.limits), {4000})
+
+    def test_saved_record_stages_follow_the_june_rules(self) -> None:
+        employer = {"suppress_terms": ["example condition"]}
+        judged = {"diagnosis": "SUPPRESS", "drug": "SUPPRESS", "mechanism": "none", "manages_intervention": False}
+        self.assertEqual(first_lost_stage_saved({"mode": "SUPPRESS", "judgment": judged}, employer), "not_managing")
+        empty = dict(judged, mechanism="")
+        self.assertEqual(first_lost_stage_saved({"mode": "SUPPRESS", "judgment": empty}, employer), "recipient_need_no_output")
+        kept = dict(judged, manages_intervention=True)
+        self.assertEqual(first_lost_stage_saved({"mode": "SUPPRESS", "judgment": kept}, employer), "recipient_need_suppress")
+        included = {"mode": "INCLUDE", "judgment": kept, "fallback": True}
+        self.assertEqual(first_lost_stage_saved(included, employer), "drafting_fallback")
+        self.assertEqual(first_lost_stage_saved({**included, "fallback": False}, employer), "passed_to_drafting")
+        self.assertEqual(first_lost_stage_saved(included, {"suppress_terms": []}), "extraction_no_output")
 
 
 if __name__ == "__main__":
